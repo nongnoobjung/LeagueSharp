@@ -161,7 +161,6 @@ namespace AlienHack_XinSharp
         {
             if ( QSpell.IsReady() && LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Combo) 
             {
-                Game.PrintChat("Q");
                 QSpell.Cast(); 
             }
         }
