@@ -8,11 +8,10 @@ using SharpDX;
 
 namespace AlienHack_XinSharp
 {
-    class Program
+    internal class Program
     {
         public static Menu Config;
 
-        public static Orbwalking.Orbwalker Orbwalker;
         public static Spell QSpell;
         public static Spell WSpell;
         public static Spell ESpell;
@@ -30,7 +29,7 @@ namespace AlienHack_XinSharp
 
         static void Game_OnGameLoad(EventArgs args)
         {
-            if (ObjectManager.Player.ChampionName != "XinZhao") return;
+            //if (ObjectManager.Player.ChampionName != "XinZhao") return;
 
             //Spells
             QSpell = new Spell(SpellSlot.Q, 375);
@@ -54,25 +53,17 @@ namespace AlienHack_XinSharp
 
 
             //Orbwalker submenu            
-            
-            /*Lxorbwalker
-             * 
-             *var orbwalkerMenu = new Menu("Orbwalker", "LX_Orbwalker");
+
+
+            //Lxorbwalker
+            var orbwalkerMenu = new Menu("Orbwalker", "LX_Orbwalker");
             LXOrbwalker.AddToMenu(orbwalkerMenu);
-            Config.AddSubMenu(orbwalkerMenu);*/
+            Config.AddSubMenu(orbwalkerMenu);
 
             //Add the targer selector to the menu.
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
             SimpleTs.AddToMenu(targetSelectorMenu);
             Config.AddSubMenu(targetSelectorMenu);
-
-
-            //LaneClear menu
-            Config.AddSubMenu(new Menu("LaneClear", "LaneClear/Jungle Clear"));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseQLaneClear", "Use Q").SetValue(true));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseWLaneClear", "Use W").SetValue(true));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseELaneClear", "Use E").SetValue(true));
-
 
             //Combo menu
             Config.AddSubMenu(new Menu("Combo", "Combo"));
@@ -81,16 +72,21 @@ namespace AlienHack_XinSharp
             Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R Kill Secured").SetValue(true));
 
+            //LaneClear menu
+            Config.AddSubMenu(new Menu("LaneClear/Jungle Clear", "LaneClear"));
+            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseQLaneClear", "Use Q").SetValue(true));
+            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseWLaneClear", "Use W").SetValue(true));
+            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseELaneClear", "Use E").SetValue(true));
+
             //Misc Menu
             Config.AddSubMenu(new Menu("Misc", "Misc"));
-            //Config.SubMenu("Misc").AddItem(new MenuItem("AutoTiamat", "Auto Tiamat").SetValue(true));
-            Config.SubMenu("miscs").AddItem(new MenuItem("packet", "Use Packets").SetValue(true));
-            Config.SubMenu("miscs").AddItem(new MenuItem("useEKS", "Use E KS").SetValue(true));
-            Config.SubMenu("miscs").AddItem(new MenuItem("useRIn", "Use R Interrupt").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("packet", "Use Packets").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("useEKS", "Use E KS").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("useRIn", "Use R Interrupt").SetValue(true));
 
 
             //Items public static Int32 Tiamat = 3077, Hydra = 3074, Blade = 3153, Bilge = 3144, Rand = 3143, lotis = 3190;
-            /*Config.AddSubMenu(new Menu("items", "items"));
+            Config.AddSubMenu(new Menu("items", "items"));
             Config.SubMenu("items").AddSubMenu(new Menu("Offensive", "Offensive"));
             Config.SubMenu("items").SubMenu("Offensive").AddItem(new MenuItem("Tiamat", "Use Tiamat")).SetValue(true);
             Config.SubMenu("items").SubMenu("Offensive").AddItem(new MenuItem("Hydra", "Use Hydra")).SetValue(true);
@@ -123,13 +119,13 @@ namespace AlienHack_XinSharp
             Config.SubMenu("items")
                 .SubMenu("Deffensive")
                 .AddItem(new MenuItem("lotisminhp", "Solari if Ally Hp<").SetValue(new Slider(35, 1, 100)));
-              */
+              
 
             //SummonerSpell Menu
             Config.AddSubMenu(new Menu("SummonerSpell", "SummonerSpell"));
-            Config.SubMenu("miscs").AddItem(new MenuItem("usesmite", "Use Smite(Toggle)").SetValue(new KeyBind("N".ToCharArray()[0],
+            Config.SubMenu("SummonerSpell").AddItem(new MenuItem("usesmite", "Use Smite(Toggle)").SetValue(new KeyBind("N".ToCharArray()[0],
         KeyBindType.Toggle)));
-            Config.SubMenu("miscs").AddItem(new MenuItem("useIgnite", "use Ignite KS").SetValue(true));
+            Config.SubMenu("SummonerSpell").AddItem(new MenuItem("useIgnite", "use Ignite KS").SetValue(true));
            
             //Skin Changer
             Config.AddSubMenu(new Menu("Skin Changer", "SkinChanger"));
@@ -143,7 +139,7 @@ namespace AlienHack_XinSharp
             Config.SubMenu("DrawSettings").AddItem(new MenuItem("DrawE", "E Range").SetValue(true));
             Config.SubMenu("DrawSettings").AddItem(new MenuItem("DrawR", "R Range").SetValue(true));
 
-           Activator.addmenu(Config);
+           // Activator.addmenu(Config);
 
             Config.AddToMainMenu();
             // end menu
@@ -158,12 +154,16 @@ namespace AlienHack_XinSharp
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Interrupter.OnPossibleToInterrupt += OnPossibleToInterrupt;
-            Orbwalking.AfterAttack += AfterAttack;
+            LXOrbwalker.AfterAttack += AfterAttack;
         }
 
         static void AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
         {
-            if (unit.IsMe && target.IsValidTarget(QSpell.Range) && QSpell.IsReady() && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo) QSpell.Cast();
+            if ( QSpell.IsReady() && LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Combo) 
+            {
+                Game.PrintChat("Q");
+                QSpell.Cast(); 
+            }
         }
 
         public static bool packets()
@@ -181,42 +181,27 @@ namespace AlienHack_XinSharp
         static void OnPossibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
         {
             if (!Config.Item("useRIn").GetValue<bool>()) return;
-            if (unit.IsValidTarget(RSpell.Range) && RSpell.IsReady() && !unit.HasBuff("xenzhaointimidate")) RSpell.Cast();
+            if (RSpell.IsReady() && unit.IsValidTarget(RSpell.Range))
+                RSpell.Cast();
         }
 
         static void Game_OnGameUpdate(EventArgs args)
         {
-            if (Player.IsDead) return;
 
-            
+
             //LXorbwalk
-            /*
-            switch (LXOrbwalker.CurrentMode)
-            {
-                case LXOrbwalker.Mode.Combo:
-                    Combo();
-                    break;
-                case LXOrbwalker.Mode.Flee:
-                    Flee();
-                    break;
-                case LXOrbwalker.Mode.LaneClear:
-                    LaneClear();
-                    break;
-            }*/
 
-            //normal orbwalk
-            switch (Orbwalker.ActiveMode)
+            if (LXOrbwalker.CurrentMode == LXOrbwalker.Mode.LaneClear)
             {
-                case Orbwalking.OrbwalkingMode.Combo:
-                    Combo();
-                    break;
-                case Orbwalking.OrbwalkingMode.LaneClear:
-                    Combo();
-                    break;
+                LaneClear();
+            }
+            if (LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Combo)
+            {
+                Combo();
             }
 
-            
             ks();
+            
 
             if (Config.Item("skin").GetValue<bool>() && Config.Item("skin1").GetValue<Slider>().Value != lastSkinId)
                 {
@@ -224,7 +209,7 @@ namespace AlienHack_XinSharp
                     lastSkinId = Config.Item("skin1").GetValue<Slider>().Value;
                 }
 
-            if (Config.Item("Usesmite").GetValue<KeyBind>().Active)
+            if (Config.Item("usesmite").GetValue<KeyBind>().Active)
             {
                 Smite();
             }
@@ -279,34 +264,44 @@ namespace AlienHack_XinSharp
 
         static void ks()
         {
-            var target = SimpleTs.GetTarget(ESpell.Range, SimpleTs.DamageType.Magical);
-            if (target == null) return;
 
-            if (Config.Item("useEKS").GetValue<bool>())
+
+            var nearChamps = (from champ in ObjectManager.Get<Obj_AI_Hero>() where Player.Distance(champ.ServerPosition) <= 600 && champ.IsEnemy select champ).ToList();
+            nearChamps.OrderBy(x => x.Health);
+
+
+            foreach (var target in nearChamps)
             {
-                if (ESpell.IsReady() && ESpell.IsKillable(target))
+                //ignite
+                if (target != null && Config.Item("useIgnite").GetValue<bool>() && igniteSlot != SpellSlot.Unknown &&
+                                Player.SummonerSpellbook.CanUseSpell(igniteSlot) == SpellState.Ready && Player.Distance(target.ServerPosition) <= 600)
                 {
-                    ESpell.Cast(target, packets());
-                }
-            }
-
-
-            var igniteDmg = Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
-            if (target != null && Config.Item("UseIgnitekill").GetValue<bool>() && igniteSlot != SpellSlot.Unknown &&
-               Player.SummonerSpellbook.CanUseSpell(igniteSlot) == SpellState.Ready)
-                {
-                    if (igniteDmg > target.Health)
+                    if (Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) > target.Health)
                     {
                         Player.SummonerSpellbook.CastSpell(igniteSlot, target);
                     }
                 }
+
+                if (Player.Distance(target.ServerPosition) <= ESpell.Range && (Player.GetSpellDamage(target, SpellSlot.E)) > target.Health)
+                {
+                    if (ESpell.IsReady())
+                    {
+                        ESpell.Cast(target, packets());
+                        return;
+                    }
+                }
+
+            }
+
+
         }
 
         static void Combo()
         {
             var target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Physical);
-           //lxorbwalker
-            /*if (Config.Item("UseECombo").GetValue<bool>() && ESpell.IsReady() && target.IsValidTarget(ESpell.Range) && !LXOrbwalker.InAutoAttackRange(target)) 
+
+
+            if (Config.Item("UseECombo").GetValue<bool>() && ESpell.IsReady() && target.IsValidTarget(ESpell.Range) && !LXOrbwalker.InAutoAttackRange(target)) 
             {
                 ESpell.Cast(target, packets());
             }
@@ -314,41 +309,38 @@ namespace AlienHack_XinSharp
             if (Config.Item("UseWCombo").GetValue<bool>() && WSpell.IsReady() && LXOrbwalker.InAutoAttackRange(target))
             {
                 WSpell.Cast();
-            }*/
-
-            if (Config.Item("UseECombo").GetValue<bool>() && ESpell.IsReady() && target.IsValidTarget(ESpell.Range) && Orbwalking.InAutoAttackRange(target) ) 
-            {
-                ESpell.Cast(target, packets());
             }
-
-            if (Config.Item("UseWCombo").GetValue<bool>() && WSpell.IsReady() && Orbwalking.InAutoAttackRange(target))
-            {
-                WSpell.Cast();
-            }
-            if (Config.Item("UseRCombo").GetValue<bool>() && RSpell.IsReady() && RSpell.IsKillable(target) && target.IsValidTarget(RSpell.Range))
+            if (Config.Item("UseRCombo").GetValue<bool>() && RSpell.IsReady() && (Player.GetSpellDamage(target, SpellSlot.R)) > target.Health && target.IsValidTarget(RSpell.Range))
             {
                 RSpell.Cast();
             }
 
-            Activator.UseItemes(target);
+            UseItemes(target);
         }
 
         static void LaneClear()
         {
-            var minion = MinionManager.GetMinions(Player.Position, ESpell.Range, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.MaxHealth).OrderBy(i => i.Distance(Player)).FirstOrDefault();
-             if (Config.Item("UseQLaneClear").GetValue<bool>() && QSpell.IsReady() && minion.IsValidTarget(QSpell.Range))
+            var minion = MinionManager.GetMinions(Player.ServerPosition, ESpell.Range,
+                MinionTypes.All,
+                MinionTeam.NotAlly, MinionOrderTypes.MaxHealth);
+            
+            if(minion.Count > 0){
+                 var minions = minion[0];
+             if (Config.Item("UseQLaneClear").GetValue<bool>() && QSpell.IsReady() && minions.IsValidTarget(QSpell.Range))
              {
                  QSpell.Cast();
              }
 
-             if (Config.Item("UseWLaneClear").GetValue<bool>() && WSpell.IsReady() && Orbwalking.InAutoAttackRange(minion))
+             if (Config.Item("UseWLaneClear").GetValue<bool>() && WSpell.IsReady() && LXOrbwalker.InAutoAttackRange(minions))
              {
                  WSpell.Cast();
              }
-             if (Config.Item("UseELaneClear").GetValue<bool>() && ESpell.IsReady() && (!Orbwalking.InAutoAttackRange(minion) || ESpell.IsKillable(minion)))
+             if (Config.Item("UseELaneClear").GetValue<bool>() && ESpell.IsReady() && minions.IsValidTarget(ESpell.Range) )
              {
-                 ESpell.Cast(minion, packets());
+                 ESpell.Cast(minions, packets());
              }
+        }
+
         }
 
        /* ADD later LX Still Bug :(
@@ -359,7 +351,7 @@ namespace AlienHack_XinSharp
         }*/
 
 
-      /*
+      
         private static void UseItemes(Obj_AI_Hero target)
         {
             var iBilge = Config.Item("Bilge").GetValue<bool>();
@@ -418,7 +410,7 @@ namespace AlienHack_XinSharp
                 }
             }
         }
-   */
+   
     
     
     }
