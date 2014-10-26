@@ -133,7 +133,7 @@ namespace AlienHack_XinSharp
             }
             if (Config.Item("UseRCombo").GetValue<bool>() && RSpell.IsReady() && RSpell.IsKillable(target) && target.IsValidTarget(RSpell.Range))
             {
-                ESpell.Cast(target, packets());
+                RSpell.Cast();
             }
         }
 
