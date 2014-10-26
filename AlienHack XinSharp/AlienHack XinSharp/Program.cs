@@ -29,7 +29,7 @@ namespace AlienHack_XinSharp
 
         static void Game_OnGameLoad(EventArgs args)
         {
-            //if (ObjectManager.Player.ChampionName != "XinZhao") return;
+            if (ObjectManager.Player.ChampionName != "XinZhao") return;
 
             //Spells
             QSpell = new Spell(SpellSlot.Q, 375);
