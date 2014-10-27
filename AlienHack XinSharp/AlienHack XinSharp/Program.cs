@@ -159,8 +159,9 @@ namespace AlienHack_XinSharp
 
         static void AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
         {
-            if ( QSpell.IsReady() && LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Combo) 
+            if (unit.IsMe && QSpell.IsReady() && LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Combo && Config.Item("UseQCombo").GetValue<bool>() && target.IsValidTarget(QSpell.Range)) 
             {
+                LXOrbwalker.ResetAutoAttackTimer();
                 QSpell.Cast(); 
             }
         }
