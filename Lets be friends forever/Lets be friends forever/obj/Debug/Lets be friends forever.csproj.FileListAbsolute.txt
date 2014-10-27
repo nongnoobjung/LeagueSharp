@@ -1,0 +1,12 @@
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\bin\Release\Alien Amumu Lets be friends forever.exe.config
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\bin\Release\Alien Amumu Lets be friends forever.exe
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\bin\Release\Alien Amumu Lets be friends forever.pdb
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\bin\Release\LeagueSharp.Common.dll
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\bin\Release\LeagueSharp.dll
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\bin\Release\LX-Orbwalker.dll
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\bin\Release\SharpDX.dll
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\bin\Release\LeagueSharp.xml
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\obj\Debug\Lets be friends forever.csprojResolveAssemblyReference.cache
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\obj\Debug\Alien Amumu Lets be friends forever.exe
+C:\Users\nongnoobjung\documents\visual studio 2013\Projects\Lets be friends forever\Lets be friends forever\obj\Debug\Alien Amumu Lets be friends forever.pdb
