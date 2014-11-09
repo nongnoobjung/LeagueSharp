@@ -61,7 +61,7 @@ namespace Dunkmaster_Darius
             Config.SubMenu("Combo").AddItem(new MenuItem("UseQC", "Use Q").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseWC", "Use W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseEC", "Use E").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseRC", "Use R").SetValue(true));
+            //Config.SubMenu("Combo").AddItem(new MenuItem("UseRC", "Use R").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseItemC", "Use Item Combo").SetValue(true));
 
             //Harass
@@ -237,8 +237,10 @@ namespace Dunkmaster_Darius
                 }
 
 
-                if (Config.Item("UseRKs").GetValue<bool>()) CastR(target);
-                if (R.IsReady()) continue;
+                if (Config.Item("UseRKs").GetValue<bool>() && R.IsReady() && !target.IsDead && Player.Distance(target) < R.Range )
+                {
+                    CastR(target);
+                }
 
                 if (igniteSlot != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(igniteSlot) == SpellState.Ready && ObjectManager.Player.Distance(target) < 600 && Config.Item("IgKs").GetValue<bool>())
                 {
@@ -287,7 +289,7 @@ namespace Dunkmaster_Darius
                     if (buff.Name == "dariushemo")
                     {
                         if (ObjectManager.Player.GetSpellDamage(target, SpellSlot.R, 1) *
-                            (1 + buff.Count / 5) - 1 > (target.Health+20))
+                            (1 + buff.Count / 5) - 1 > (target.Health))
                         {
                             R.CastOnUnit(target, true);
                         }
@@ -295,7 +297,7 @@ namespace Dunkmaster_Darius
                 }
             }
             else if (ObjectManager.Player.GetSpellDamage(target, SpellSlot.R, 1) - 15 >
-                     (target.Health+20))
+                     (target.Health))
             {
                 R.CastOnUnit(target, true);
             }
@@ -303,7 +305,7 @@ namespace Dunkmaster_Darius
 
         static void Combo()
         {
-            var target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Physical);
+            var target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
 
             if (Config.Item("UseEC").GetValue<bool>() && E.IsReady() && Player.Distance(target) <= E.Range)
             {
@@ -314,10 +316,10 @@ namespace Dunkmaster_Darius
                 //Game.PrintChat("q2");
                 Q.Cast();
             }
-            if (Config.Item("UseRC").GetValue<bool>() && R.IsReady() && Player.Distance(target) <= R.Range)
+         /*   if (Config.Item("UseRC").GetValue<bool>() && R.IsReady() && Player.Distance(target) <= R.Range)
             {
                 CastR(target);
-            }
+            }*/
 
         }
 
