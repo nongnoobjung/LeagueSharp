@@ -152,9 +152,10 @@ namespace Dunkmaster_Darius
         static void Drawing_OnDraw(EventArgs args)
         {
             if (Player.IsDead) return;
+            var minE = Config.Item("MinE").GetValue<Slider>().Value;
             if (Config.Item("DrawQ").GetValue<bool>() && Q.Level > 0) Utility.DrawCircle(Player.Position, Q.Range, System.Drawing.Color.Red);
             if (Config.Item("DrawW").GetValue<bool>() && W.Level > 0) Utility.DrawCircle(Player.Position, W.Range, System.Drawing.Color.Cyan);
-            if (Config.Item("DrawE").GetValue<bool>() && E.Level > 0) Utility.DrawCircle(Player.Position, E.Range, System.Drawing.Color.Green);
+            if (Config.Item("DrawE").GetValue<bool>() && E.Level > 0) Utility.DrawCircle(Player.Position, minE, System.Drawing.Color.Green);
             if (Config.Item("DrawR").GetValue<bool>() && R.Level > 0) Utility.DrawCircle(Player.Position, R.Range, System.Drawing.Color.Yellow);
             if (Config.Item("DrawK").GetValue<bool>() && R.Level > 0)
             {
@@ -297,9 +298,9 @@ namespace Dunkmaster_Darius
         {
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-            var minE = Config.Item("Hmana").GetValue<Slider>().Value;
+            var minE = Config.Item("MinE").GetValue<Slider>().Value;
 
-            if (Config.Item("UseEC").GetValue<bool>() && E.IsReady() && Player.Distance(target.Position) <= E.Range && Player.Distance(target.Position) <= minE )
+            if (Config.Item("UseEC").GetValue<bool>() && E.IsReady() && Player.Distance(target.Position) <= E.Range && Player.Distance(target.Position) >= minE )
             {
                 E.Cast(target, Packets());
             }
