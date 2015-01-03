@@ -4,7 +4,6 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
-using LX_Orbwalker;
 
 namespace Dunkmaster_Darius
 {
@@ -18,6 +17,7 @@ namespace Dunkmaster_Darius
         public static Spell R;
         public static Obj_AI_Hero Player = ObjectManager.Player;    
         public static SpellSlot igniteSlot;
+        public static Orbwalking.Orbwalker orb;
         public static Items.Item tiamat, hydra;
 
 
@@ -48,12 +48,12 @@ namespace Dunkmaster_Darius
 
             //Lxorbwalker
             var orbwalkerMenu = new Menu("Orbwalker", "LX_Orbwalker");
-            LXOrbwalker.AddToMenu(orbwalkerMenu);
+            xSLxOrbwalker.AddToMenu(orbwalkerMenu);
             Config.AddSubMenu(orbwalkerMenu);
             
             //Add the targer selector to the menu.
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
-            SimpleTs.AddToMenu(targetSelectorMenu);
+            TargetSelector.AddToMenu(targetSelectorMenu);
             Config.AddSubMenu(targetSelectorMenu);
 
             //Combo menu
@@ -76,7 +76,7 @@ namespace Dunkmaster_Darius
             //LaneClear and Jungle Menu
             Config.AddSubMenu(new Menu("LaneClear", "LaneClear"));
             Config.SubMenu("LaneClear").AddItem(new MenuItem("UseQL", "Use Q").SetValue(false));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("UseWL", "Use W").SetValue(false));
+            //Config.SubMenu("LaneClear").AddItem(new MenuItem("UseWL", "Use W").SetValue(false));
             Config.SubMenu("LaneClear").AddItem(new MenuItem("UseEL", "Use E").SetValue(false));
 
             //Misc Menu
@@ -104,55 +104,44 @@ namespace Dunkmaster_Darius
             Game.PrintChat("AlienHack : Dunkmaster Darius");
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            Interrupter.OnPossibleToInterrupt += OnPossibleToInterrupt;
-            LXOrbwalker.AfterAttack += AfterAttack;
+            xSLxOrbwalker.AfterAttack += AfterAttack;
 
         }
 
-        static void AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
+        static void AfterAttack(AttackableUnit unit, AttackableUnit target)
         {
 
             if (!unit.IsMe)
                 return;
 
-            if (target.IsMinion)
-            {
-                if (Config.Item("UseWL").GetValue<bool>() && W.IsReady() && LXOrbwalker.InAutoAttackRange(target) && LXOrbwalker.CurrentMode == LXOrbwalker.Mode.LaneClear)
+                if (Config.Item("UseWC").GetValue<bool>() && W.IsReady() && xSLxOrbwalker.InAutoAttackRange(target) && xSLxOrbwalker.CurrentMode == xSLxOrbwalker.Mode.Combo)
                 {
                     W.Cast();
-                    LXOrbwalker.ResetAutoAttackTimer();
+                    xSLxOrbwalker.ResetAutoAttackTimer();
                 }
-                return;
-            }
-            else
-            {
-                if (Config.Item("UseWC").GetValue<bool>()  && W.IsReady() && LXOrbwalker.InAutoAttackRange(target) && LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Combo)
-                {
-                    W.Cast();
-                    LXOrbwalker.ResetAutoAttackTimer();
-                }
-                if (Config.Item("UseItemC").GetValue<bool>() && LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Combo)
+                if (Config.Item("UseItemC").GetValue<bool>() && xSLxOrbwalker.CurrentMode == xSLxOrbwalker.Mode.Combo)
                 {
                     if (Utility.CountEnemysInRange(350) >= 1 && tiamat.IsReady() && !W.IsReady())
                     {
                         tiamat.Cast();
-                        LXOrbwalker.ResetAutoAttackTimer();
+                        xSLxOrbwalker.ResetAutoAttackTimer();
                     }
                     if (Utility.CountEnemysInRange(350) >= 1 && hydra.IsReady() && !W.IsReady() )
                     {
                         hydra.Cast();
-                        LXOrbwalker.ResetAutoAttackTimer();
+                        xSLxOrbwalker.ResetAutoAttackTimer();
                     }
                 }
 
                 return;
-            }
+            
         }
 
         static void OnPossibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
         {
             if (!Config.Item("Interrupt").GetValue<bool>()) return;
-            if (E.IsReady() && Player.Distance(unit) <= E.Range)
+            var target = unit;
+            if (E.IsReady() && Player.Distance(target.Position) < R.Range)
             {
                 E.Cast(unit, Packets());
             }
@@ -196,15 +185,15 @@ namespace Dunkmaster_Darius
         {
 
             if (Player.IsDead) return;
-            switch (LXOrbwalker.CurrentMode)
+            switch (xSLxOrbwalker.CurrentMode)
             {
-                case LXOrbwalker.Mode.Combo:
+                case xSLxOrbwalker.Mode.Combo:
                     Combo();
                     break;
-                case LXOrbwalker.Mode.Harass:
+                case xSLxOrbwalker.Mode.Harass:
                     Harrass();
                     break;
-                case LXOrbwalker.Mode.LaneClear:
+                case xSLxOrbwalker.Mode.LaneClear:
                     LaneClear();
                     break;
             }
@@ -230,23 +219,23 @@ namespace Dunkmaster_Darius
             foreach (var target in ObjectManager.Get<Obj_AI_Hero>())
             {
 
-                if (Config.Item("UseQKs").GetValue<bool>() && !target.IsDead && Q.IsReady() && Player.Distance(target) < Q.Range && Player.GetSpellDamage(target, SpellSlot.Q) > (target.Health+20))
+                if (Config.Item("UseQKs").GetValue<bool>() && !target.IsDead && Q.IsReady() && Player.Distance(target.Position) < Q.Range && Player.GetSpellDamage(target, SpellSlot.Q) > (target.Health+20))
                 {
                     //Game.PrintChat("q5");
                     Q.Cast();
                 }
 
 
-                if (Config.Item("UseRKs").GetValue<bool>() && R.IsReady() && !target.IsDead && Player.Distance(target) < R.Range )
+                if (Config.Item("UseRKs").GetValue<bool>() && R.IsReady() && !target.IsDead && Player.Distance(target.Position) < R.Range )
                 {
                     CastR(target);
                 }
 
-                if (igniteSlot != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(igniteSlot) == SpellState.Ready && ObjectManager.Player.Distance(target) < 600 && Config.Item("IgKs").GetValue<bool>())
+                if (igniteSlot != SpellSlot.Unknown && ObjectManager.Player.Spellbook.CanUseSpell(igniteSlot)  == SpellState.Ready && ObjectManager.Player.Distance(target.Position) < 600 && Config.Item("IgKs").GetValue<bool>())
                 {
                     if (ObjectManager.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) > target.Health)
                     {
-                        ObjectManager.Player.SummonerSpellbook.CastSpell(igniteSlot, target);
+                        ObjectManager.Player.Spellbook.CastSpell(igniteSlot, target);
                     }
                 }
             }
@@ -263,7 +252,7 @@ namespace Dunkmaster_Darius
             {
 
                 //ignite
-                if (Player.Distance(target) > 270 && Player.Distance(target) < Q.Range && !target.IsDead && target.IsEnemy)
+                if (Player.Distance(target.Position) > 270 && Player.Distance(target.Position) < Q.Range && !target.IsDead && target.IsEnemy)
                 {
                     //Game.PrintChat("q1");
                     Q.Cast();
@@ -305,13 +294,13 @@ namespace Dunkmaster_Darius
 
         static void Combo()
         {
-            var target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
+            var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-            if (Config.Item("UseEC").GetValue<bool>() && E.IsReady() && Player.Distance(target) <= E.Range)
+            if (Config.Item("UseEC").GetValue<bool>() && E.IsReady() && Player.Distance(target.Position) <= E.Range)
             {
                 E.Cast(target, Packets());
             }
-            if (Config.Item("UseQC").GetValue<bool>() && Q.IsReady() && Player.Distance(target) <= Q.Range)
+            if (Config.Item("UseQC").GetValue<bool>() && Q.IsReady() && Player.Distance(target.Position) <= Q.Range)
             {
                 //Game.PrintChat("q2");
                 Q.Cast();
@@ -325,18 +314,18 @@ namespace Dunkmaster_Darius
 
         static void Harrass()
         {
-            var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
+            var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
             var existsMana = ObjectManager.Player.MaxMana / 100 * Config.Item("Hmana").GetValue<Slider>().Value;
 
 
             if (Player.Mana >= existsMana)
             {
-                if (Config.Item("UseQH").GetValue<bool>() && Q.IsReady() && Player.Distance(target) <= Q.Range)
+                if (Config.Item("UseQH").GetValue<bool>() && Q.IsReady() && Player.Distance(target.Position) <= Q.Range)
                 {
                     //Game.PrintChat("q3");
                     Q.Cast();
                 }
-                if (Config.Item("UseEH").GetValue<bool>() && E.IsReady() && Player.Distance(target) <= E.Range)
+                if (Config.Item("UseEH").GetValue<bool>() && E.IsReady() && Player.Distance(target.Position) <= E.Range)
                 {
                     E.Cast(target,Packets());
                 }

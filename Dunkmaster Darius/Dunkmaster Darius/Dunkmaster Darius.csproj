@@ -41,9 +41,6 @@
     <Reference Include="LeagueSharp.Common">
       <HintPath>D:\LeagueSharp\\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
-    <Reference Include="LX-Orbwalker">
-      <HintPath>D:\LeagueSharp\\System\LX-Orbwalker.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX">
       <HintPath>D:\LeagueSharp\\System\SharpDX.dll</HintPath>
     </Reference>
@@ -57,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="orbwalker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
