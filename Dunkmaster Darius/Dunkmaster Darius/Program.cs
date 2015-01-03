@@ -33,7 +33,7 @@ namespace Dunkmaster_Darius
             //Spell
             Q = new Spell(SpellSlot.Q, 425);
             W = new Spell(SpellSlot.W, 145);
-            E = new Spell(SpellSlot.E, 540);
+            E = new Spell(SpellSlot.E, 550);
             R = new Spell(SpellSlot.R, 460);
 
             igniteSlot = Player.GetSpellSlot("SummonerDot");
@@ -62,6 +62,7 @@ namespace Dunkmaster_Darius
             Config.SubMenu("Combo").AddItem(new MenuItem("UseWC", "Use W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseEC", "Use E").SetValue(true));
             //Config.SubMenu("Combo").AddItem(new MenuItem("UseRC", "Use R").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("MinE", "Min. Range Use E").SetValue(new Slider(100, 550, 0)));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseItemC", "Use Item Combo").SetValue(true));
 
             //Harass
@@ -296,7 +297,9 @@ namespace Dunkmaster_Darius
         {
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-            if (Config.Item("UseEC").GetValue<bool>() && E.IsReady() && Player.Distance(target.Position) <= E.Range)
+            var minE = Config.Item("Hmana").GetValue<Slider>().Value;
+
+            if (Config.Item("UseEC").GetValue<bool>() && E.IsReady() && Player.Distance(target.Position) <= E.Range && Player.Distance(target.Position) <= minE )
             {
                 E.Cast(target, Packets());
             }
