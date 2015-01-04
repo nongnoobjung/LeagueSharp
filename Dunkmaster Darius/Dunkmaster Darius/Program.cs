@@ -17,7 +17,6 @@ namespace Dunkmaster_Darius
         public static Spell R;
         public static Obj_AI_Hero Player = ObjectManager.Player;    
         public static SpellSlot igniteSlot;
-        public static Orbwalking.Orbwalker orb;
         public static Items.Item tiamat, hydra;
 
 
@@ -95,7 +94,8 @@ namespace Dunkmaster_Darius
             Config.AddSubMenu(new Menu("Draw", "DrawSettings"));
             Config.SubMenu("DrawSettings").AddItem(new MenuItem("DrawQ", "Q Range").SetValue(false));
             Config.SubMenu("DrawSettings").AddItem(new MenuItem("DrawW", "W Range").SetValue(false));
-            Config.SubMenu("DrawSettings").AddItem(new MenuItem("DrawE", "E Range").SetValue(false));
+            Config.SubMenu("DrawSettings").AddItem(new MenuItem("DrawEn", "Min E Range").SetValue(false));
+            Config.SubMenu("DrawSettings").AddItem(new MenuItem("DrawEx", "Max E Range").SetValue(false));
             Config.SubMenu("DrawSettings").AddItem(new MenuItem("DrawR", "R Range").SetValue(false));
             Config.SubMenu("DrawSettings").AddItem(new MenuItem("DrawK", "Draw R Killable").SetValue(false));
             
@@ -155,7 +155,8 @@ namespace Dunkmaster_Darius
             var minE = Config.Item("MinE").GetValue<Slider>().Value;
             if (Config.Item("DrawQ").GetValue<bool>() && Q.Level > 0) Utility.DrawCircle(Player.Position, Q.Range, System.Drawing.Color.Red);
             if (Config.Item("DrawW").GetValue<bool>() && W.Level > 0) Utility.DrawCircle(Player.Position, W.Range, System.Drawing.Color.Cyan);
-            if (Config.Item("DrawE").GetValue<bool>() && E.Level > 0) Utility.DrawCircle(Player.Position, minE, System.Drawing.Color.Green);
+            if (Config.Item("DrawEx").GetValue<bool>() && E.Level > 0) Utility.DrawCircle(Player.Position, E.Range, System.Drawing.Color.Green);
+            if (Config.Item("DrawEn").GetValue<bool>() && E.Level > 0) Utility.DrawCircle(Player.Position, minE, System.Drawing.Color.Green);
             if (Config.Item("DrawR").GetValue<bool>() && R.Level > 0) Utility.DrawCircle(Player.Position, R.Range, System.Drawing.Color.Yellow);
             if (Config.Item("DrawK").GetValue<bool>() && R.Level > 0)
             {
@@ -250,16 +251,17 @@ namespace Dunkmaster_Darius
             var nearChamps = (from champ in ObjectManager.Get<Obj_AI_Hero>() where Player.Distance(champ.ServerPosition) <= Q.Range && champ.IsEnemy select champ).ToList();
 
 
-            foreach (var target in nearChamps)
-            {
+            var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
+            //foreach (var target in nearChamps)
+            //{
 
                 //ignite
-                if (Player.Distance(target.Position) > 270 && Player.Distance(target.Position) < Q.Range && !target.IsDead && target.IsEnemy)
+                if (Player.Distance(target) > 270 && Player.Distance(target) < Q.Range-10 && !target.IsDead && target.IsEnemy && target.IsValid)
                 {
                     //Game.PrintChat("q1");
                     Q.Cast();
                 }
-            }
+           // }
 
            
           
